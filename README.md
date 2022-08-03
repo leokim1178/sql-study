@@ -9,13 +9,16 @@ SQLD/SQLP 공부용 Repository
 접수 2022.08.08(월) ~ 2022.08.12(금)  
 수험표 발행 2022.08.19(금)  
 시험 2022.09.04(일)  
-과목 1. 데이터 모델링의 이해 ~ 2. SQL 기본 및 활용
+과목 1. 데이터 모델링의 이해 ~ 2. SQL 기본 및 활용  
+요약자료 [SQLD.pdf](https://github.com/HoHoRang/sql-developer-professional/files/9250573/SQLD.pdf)
 
 <br>
 
 ## 📕 SQL 전문가
 
-과목 1. 데이터 모델링의 이해 ~ 3. SQL 고급 활용 및 튜닝
+과목 1. 데이터 모델링의 이해 ~ 3. SQL 고급 활용 및 튜닝  
+요약자료 [SQLP.pdf](https://github.com/HoHoRang/sql-developer-professional/files/9250575/SQLP.pdf)  
+(출처: https://hyotwo.tistory.com/103)
 
 <br>
 
