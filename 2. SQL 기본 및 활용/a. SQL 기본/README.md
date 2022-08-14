@@ -1,0 +1,22 @@
+---
+과목2 SQL 기본 및 활용
+1장 SQL 기본
+---
+
+# 관계형 데이터베이스 개요
+
+1. 데이터베이스
+
+# DDL(DATA DEFINITION LANGUAGE)
+
+# DML(DATA MANIPULATION LANGUAGE )
+
+# TCL(TRANSACTION CONTROL LANGUAGE)
+
+# WHERE 절
+
+# 함수(FUNCTION)
+
+# GROUP BY, HAVING 절
+
+# 조인(JOIN)
