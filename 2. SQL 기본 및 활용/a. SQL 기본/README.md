@@ -52,6 +52,302 @@
 
 # DDL(DATA DEFINITION LANGUAGE)
 
+1. 데이터 유형
+
+   - 자료를 입력할때 자료를 받아들일 공간을 자료의 유형별로 나누는 기준
+   - 특정 칼럼을 정의할때 선언한 데이터 유형은 그 칼럼이 받아들일 자료의 유형을 규정한다
+   - 선언한 유형과 다른 종류의 데이터가 들어오면 에러를 리턴한다
+   - 대표적인 4가지의 데이터 유형
+     - CHARACTER(s)
+       - 고정 길이 문자열 정보
+       - s는 기본 길이 1바이트 최대 길이 2000~8000바이트
+       - s만큼 최대 길이를 갖고 고정 길이를 가지고 있으므로 할당된 변수 값의 길이가 s보다 작을 경우 그 차이 길이만큼 공간으로 채워진다
+     - VARCHAR(s)
+       - Character Varying의 약자
+       - 가변 길이 문자열 정보
+       - s는 최소 길이 1바이트, 최대 길이 4000~8000바이트
+       - s만큼 최대 길이를 갖지만 가변 길이로 조정이 되기 떄문에 할당된 변수값의 바이트만 적용된다
+     - NUMERIC
+       - 정수, 실수 등 숫자 정보(오라클은 NUMBER만, SQL Server는 10가지 이상의 숫자타입을 가지고 있음)
+       - 오라클은 처음에 전체 자리 수를 지정하고 그다음 소수 부분의 자리 수를 지정한다
+       - ex) 'NUMBER(8,2)' : 정수 부분이 6자리이고 소수점 부분이 2자리
+     - DATETIME
+       - 날짜와 시각 정보
+       - 오라클은 1초단위, SQL 서버는 3.33ms 단위로 관리
+   - CHAR과 VARCHAR의 차이
+     - VARCHAR는 가변길이므로 필요한 영역은 실제 데이터 크기뿐이다
+       - 따라서 길이가 다양한 칼럼과 정의된 길이와 실제 데이터 길이에 차이가 있는 칼럼에 적합하다
+     - 저장 측면에서도 CHAR 유형보다 작은 영역에 저장할 수 있다
+     - CHAR에서는 문자열을 비교할 때 공백(BLANK)을 채 워서 비교하는 방법을 사용
+       - 예) CHAR 유형 'AA' = 'AA '
+     - VARCHAR 유형에서 는 맨 처음부터 한 문자씩 비교하고 공백도 하나의 문자로 취급하므로 끝의 공백이 다르면 다른 문자로 판단한다
+       - 예) VARCHAR 유형 'AA' ≠ 'AA '
+       -
+
+2. CREATE TABLE
+   - 테이블 생성에 대해 배우는 섹션
+   - 테이블과 칼럼 정의
+     - 데이터를 고유하게 식별할 수 있으면서 반드시 값이 존재해야하는 단일 칼럼이나 칼럼의 조합들 중 하나를 선정하여 기본키로 지정한다
+       - 단일 칼럼이 아닌 여러개의 칼럼으로 만들어질 수 있다
+       - 테이블간의 관계는 PK와 FK를 통해 정의한다
+   - CREATE TABLE
+     - 테이블을 생성하는 SQL문이다
+
+```sql
+CREATE TABLE 테이블이름 (
+ 칼럼명1 DATATYPE [DEFAULT 형식],
+  칼럼명2 DATATYPE [DEFAULT 형식],
+   칼럼명2 DATATYPE [DEFAULT 형식]
+    );
+```
+
+- 테이블 생성시 주의해야할 규칙
+  - 테이블명은 객체를 의미할 수 있는 적절한 이름을 사용
+  - 다른 테이블과 이름이 중복X
+  - 한 테이블 내에서는 칼럼명 중복X
+  - 테이블 이름을 지정하고 각 칼럼들은 `()`로 묶어 지정한다
+  - 각 칼럼들은 `,`로 구분되고 테이블 생성문의 끝은 항상 세미콜론 `;`로 끝난다
+  - 칼럼에 대해서는 데이터 표준화 관점에서 일관성 있게 사용하는 것이 좋다
+  - 칼럼 뒤에 데이터 유형은 반드시 지정되어야한다
+  - 사전에 정의한 예약어는 쓸 수 없다
+  - 테이블명, 칼럼명은 반드시 문자로 시작해야한다
+  - 벤더별로 길이에 대한 한계가 있다
+  - A-Z, a-z, 0-9, \_, $, # 문자만 허용된다.
+- 예문
+
+```sql
+CREATE TABLE PLAYER (
+PLAYER_ID CHAR(7) NOT NULL,
+PLAYER_NAME VARCHAR(20) NOT NULL,
+TEAM_ID CHAR(3) NOT NULL,
+E_PLAYER_NAME VARCHAR(40),
+NICKNAME VARCHAR(30),
+JOIN_YYYY CHAR(4),
+POSITION VARCHAR(10),
+BACK_NO TINYINT,
+NATION VARCHAR(20),
+BIRTH_DATE DATE,
+SOLAR CHAR(1),
+HEIGHT SMALLINT
+WEIGHT SMALLINT
+CONSTRAINT PLAYER_PK PRIMARY KEY (PLAYER_ID),
+CONSTRAINT PLAYER_FK FOREIGN KEY (TEAM_ID) REFERENCES TEAM(TEAM_ID) );
+```
+
+- 추가적인 주의사항
+
+  - 테이블 생성시 대/소문자 구분은 하지 않는다(기본적으로 대문자)
+  - DATETIME은 별도로 크기를 지정하지 않는다
+  - 반드시 가질 수 있는 최대 길이를 표시해야한다
+  - 칼럼과 칼럼의 구분은 콤마로 하되, 마지막 칼럼은 콤마를 찍지 않는다
+  - 칼럼에 대한 제약조건은 `CONSTRAINT`로 추가할 수 있다
+
+- 제약조건 (`CONSTRAINT`)
+
+  - 데이터 무결성을 유지하기 위한 보편적인 방법
+  - 특정 칼럼에 설정하는 제약
+  - 초기 테이블 생성 시점부터 적합한 제약조건을 검토해야한다
+
+  1. PRIMARY KEY
+     1. 지정된 행 데이터를 고유하게 식별하기 위한 키를 정의
+     2. 하나의 테이블에는 하나의 기본키 제약만 정의할수 있다
+     3. 제약을 정의하면 자동으로 유니크 인덱스를 생성한다
+     4. 기본키에는 NULL을 입력할 수 없다
+  2. UNIQUE KEY
+     1. 고유키를 정의
+     2. NULL은 고유키 제약대상은 아니다
+  3. NOT NULL
+     1. NULL의 입력을 금지한다
+     2. 모든 칼럼의 디폴트는 NULL이지만 이 제약을 지정하면 해당 칼럼은 필수 입력값이 된다
+  4. CHECK
+     1. 입력할 수 있는 값의 범위를 제한한다
+     2. TRUE or FALSE로 평가할 수 있는 논리식을 지정한다
+  5. FOREIGN KEY
+     1. 테이블 간의 관계 정의를 위해 기본키를 다른 테이블의 외래키로 복사할때 생성된다
+     2. 무결성 제약 옵션을 선택할 수 있다
+
+- NULL의 의미
+
+  - 공백이나 0과 다른 값
+  - 공집합과 다른 값
+  - 아직 정의되지 않은 미지의 값 || 현재 데이터를 입력하지 못하는 경우
+
+- DEFAULT의 의미
+
+  - 기본값을 사전에 설정해줄 수 있다
+  - 명시된 값을 지정하지 않을 경우에 NULL값이 입력된다
+  - 정의했다면, NULL이 아닌 설정한 기본값이 자동으로 입력된다
+
+- 생성된 테이블 구조 홥인
+
+  - 생성한 테이블의 구조를 확인하려면 `DESCRIBE 테이블명` 혹은 `DESC 테이블명` 명령어를 사용하면 된다
+
+- SELECT 문장을 통한 테이블 생성 사례
+  - DML 문장 중에 SELECT 문장을 활용해 테이블을 생성할 수 있는 방법이 있다
+  - CTAS: Create Table ~ As Select ~
+    - 이 방법을 통해 복제 테이블을 생성할 수 있다
+    - 단, 제약조건은 사라진다
+    - 이를 추가하기 위해서는 ALTER TABLE 기능을 사용해야 한다
+  - Select ~ Into ~ 를 활용하여 테이블을 생성할 수 있다
+
+3. ALTER TABLE
+   - 한번 생성된 테이블은 구조변경을 하기전까지 유지된다
+   - 이 구조를 유지하는 것이 최선
+   - 그러나 구조를 변경해야 할때는 ALTER TABLE을 사용한다
+
+- ADD COLUMN
+
+  - 기존 테이블에 필요한 칼럼을 추가하는 명령이다
+
+  ```sql
+  ALTER TABLE 테이블명
+  ADD 추가할 칼럼명 데이터 유형;
+  ```
+
+  - 예문
+
+  ```sql
+  ALTER TABLE PLAYER
+  ADD ADDRESS VARCHAR(80);
+  ```
+
+- DROP COLUMN
+
+  - 필요 없는 칼럼을 삭제할 수 있으며, 데이터가 있건 없건 삭제 가능하다
+  - 한번에 하나의 칼럼만 삭제할수 있다
+  - 칼럼 삭제 후 최소 하나의 칼럼이 테이블에 존재해야한다
+  - 한번 삭제된 칼럼은 복구가 불가능하다
+
+  ```sql
+  ALTER TABLE 테이블명
+  DROP COLUMN 삭제할 칼럼명;
+  ```
+
+  - 예문
+
+  ```sql
+  ALTER TABLE PLAYER
+  DROP COLUMN ADDRESS;
+  ```
+
+- MODIFY COLUMN
+
+  - 데이터 유형, 디폴트 값, NOT NULL 제약조건에 대해 변경할 수 있다
+
+  ```sql
+  ALTER TABLE 테이블명
+  ALTER (칼럼명1 데이터 유형 [DEFAULT 식] [NOT NULL],
+  칼럼명2 데이터 유형 ...);
+  ```
+
+  - 예문
+    - TEAM 테이블의 ORIG_YYYY 칼럼의 데이터 유형을 CHAR(4)→VARCHAR2(8)으로 변경
+    - 향후 입력되는 데이터의 DEFAULT 값으로 '20020129'을 적용
+    - 모든 행의 ORIG_YYYY 칼럼에 NULL이 없으므로 제약조건을 NULL → NOT NULL로 변경
+
+  ```sql
+  ALTER TABLE TEAM_TEMP
+  ALTER COLUMN ORIG_YYYY VARCAHR(8) NOT NULL;
+
+  ALTER TABLE TEAM_TEMP
+  ADD CONSTRAINT DF_ORIG_YYYY DEFAULT '20020129' FOR ORIG_YYYY;
+  ```
+
+  - 주의해야 할 점
+
+    - 해당 칼럼의 크기를 늘릴 수는 있지만 줄이지 못한다
+      - NULL 값만 가지고 있거나 테이블에 아무 행도 없으면 칼럼의 폭을 줄일 수 있다
+    - 해당 칼럼이 NULL 값만 가지고 있다면 데이터 유형도 변경할 수 있다
+      - 그렇지 않다면 변경할 수 없다
+    - DEFAULT 값을 변경하면, 변경작업 이후에 발생하는 행 삽입에만 영향을 미친다
+    - NULL값이 없을 경우에만 NOT NULL 제약조건을 추가할 수 있다
+
+- RENAME COLUMN
+
+  - 칼럼명을 변경해야 할 경우 쓰이는 문구다
+  - ANSI/ISO 에 명시된 기능이 아니며 오라클 등 일부 DBMS에서만 지원한다
+
+  ```sql
+  ALTER TABLE 테이블명
+  RENAME COLUMN 변경해야 할 칼럼명 TO 새로운 칼럼명;
+  ```
+
+- DROP CONSTRAINT
+
+  - 테이블 생성 시 부여했던 제약조건을 삭제하는 구문
+
+  ```sql
+  ALTER TABLE 테이블명
+  DROP CONSTRAINT 제약조건명;
+  ```
+
+  - 예문
+
+  ```sql
+  ALTER TABLE PLAYER
+  DROP CONSTRAINT PLAYER_FK;
+  ```
+
+- ADD CONSTRAINT
+
+  - 생성 이후에 필요할때 제약조건을 추가하는 구문
+
+  ```sql
+  ALTER TABLE 테이블명
+  ADD CONSTRAINT 제약조건명 제약조건 (칼럼명);
+  ```
+
+  - 예문
+
+  ```sql
+  ALTER TABLE PLAYER
+  ADD CONSTRAINT PLAYER_FK FOREIGN KEY (TEAM_ID) REFERENCES TEAM(TEAM_ID);
+  ```
+
+- RENAME TABLE
+
+  - 테이블의 이름을 변경할 수 있다
+
+  ```sql
+  RENAME 변경전 테이블명
+  TO 변경후 테이블명;
+  ```
+
+  - 예문
+
+  ```sql
+  RENAME TEAM
+  TO TEAM_BACKUP;
+  ```
+
+- DROP TABLE
+
+  - 테이블이 필요없을 경우 삭제한다
+  - 본 구문은 테이블의 모든 데이터 및 구조를 삭제한다
+  - CASCADE CONSTRAINT 옵션은 해당 테이블과 관계가 있던 참조되는 제약조건에 대해서도 삭제한다는 것을 의미한다
+
+  ```sql
+  DROP TABLE 테이블명 [CASCADE CONSTRAINT];
+  ```
+
+  - 예문
+
+  ```sql
+  DROP TABLE PLAYER;
+  ```
+
+- TRUNCATE TABLE
+  - 테이블이 자체가 삭제되는 것이 아니라,
+  - 해당 테이블에 들어있던 모든 행들이 제거되고 저장 공간을 재사용 가능하도록 해제한다
+  - DROP TABLE은 테이블 자체가 없어지기 때문에 테이블 구조를 확인할 수 없다
+  - 한편, 트렁케이트 테이블은 테이블 구조를 냅두고 데이터만 전부 삭제하는 기능이다
+  - DELETE TABLE보다 시스템 부하가 적다(권고한다)
+  - 주기적으로 테이블 정보를 초기화해야할때 유용할듯
+  - 예문
+  ```sql
+  TRUNCATE TABLE PLAYER;
+  ```
+
 # DML(DATA MANIPULATION LANGUAGE )
 
 # TCL(TRANSACTION CONTROL LANGUAGE)
