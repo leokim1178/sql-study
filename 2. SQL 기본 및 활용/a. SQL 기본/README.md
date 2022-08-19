@@ -350,6 +350,163 @@ CONSTRAINT PLAYER_FK FOREIGN KEY (TEAM_ID) REFERENCES TEAM(TEAM_ID) );
 
 # DML(DATA MANIPULATION LANGUAGE )
 
+- 만들어진 테이블에 관리하기 원하는 자료들을 입력,수정,삭제,조회하는 SQL
+
+1. INSERT
+
+   - 테이블에 데이터를 입력하는 구문이다
+   - 해당 칼럼명과 입력되어야 하는 값을 1:1로 매핑해서 입력한다
+   - 문자 유형일 경우 `''`로 입력한다
+   - 숫자일 겨웅 `''`을 붙이지 않는다
+   - 다음과 같이 두가지 유형이 있다
+
+   ```sql
+   ▶ 첫번째 유형
+   INSERT INTO 테이블명 (COLUMN_LIST)
+   VALUES (COLUMN_LIST에 넣을 VALUE_LIST);
+   ▶ 두번째 유형
+   INSERT INTO 테이블명
+   VALUES (전체 COLUMN에 넣을 VALUE_LIST);
+   ```
+
+   - 첫번째 유형
+     - 테이블의 칼럼을 정의할 수 있다
+     - 이 때, 테이블의 칼럼 순서와 매치할 필요는 없다
+     - 정의하지 않은 칼럼은 디폴트값으로 `NULL`이 입력된다
+     - PK나 NOT NULL인 칼럼은 `NULL`이 허용되지 않는다
+     - 예문
+     ```sql
+     INSERT INTO PLAYER(PLAYER_ID, PLAYER_NAME, TEAM_ID, POSITION, HEIGHT, WEIGHT, BACK_NO)
+     VALUES ('2002007', '박지성', 'K07', 'MF', 178, 73, 7);
+     ```
+   - 두번째 유형
+     - 테이블 상의 칼럼 순서대로 빠짐없이 데이터가 입력되어야한다
+     - 예문
+
+   ```sql
+   INSERT INTO PLAYER
+   VALUES ('2002010','이청용','K07','','BlueDragon','2002','MF','17',NULL, NULL,'1',180,69);
+   ```
+
+   - 이 유형에서 정의되지 않은 미지의 값의 경우 `''`으로 표현하거나 NULL로 표현한다
+
+2. UPDATE
+
+   - 정보를 수정해야 할 때 사용하는 구문이다
+   - UPDATE 뒤에 테이블명, SET 뒤에 수정할 칼럼명과 수정값을 다음과 같이 표현한다
+
+   ```sql
+   UPDATE 테이블명
+   SET 수정되어야 할 칼럼명 = 수정되기를 원하는 새로운 값;
+   ```
+
+   - 예문 : 선수 테이블의 백넘버를 일괄적으로 99로 수정하는 예문이다
+
+   ```sql
+   UPDATE PLAYER
+   SET BACK_NO = 99;
+   ```
+
+3. DELETE
+
+   - 데이터를 삭제하는 구문이다
+
+   ```sql
+   DELETE [FROM] 삭제를 원하는 정보가 들어있는 테이블명;
+   ```
+
+   - 예문 : 선수 테이블의 데이터를 전부 삭제한다
+
+   ```sql
+   DELETE FROM PLAYER;
+   ```
+
+   - DDL은 데이터베이스의 테이블에 직접적으로 영향을 미친다
+     - 따라서 해당하는 작업이 즉시(AUTO COMMIT) 완료된다
+   - DML은 조작하려는 테이블을 메모리 버퍼에 올려놓고 작업한다
+     - 이는 테이블에 실시간으로 영향을 미치지 않는다
+     - 따라서 버퍼에서 처리한 DML을 테이블에 반영하기 위해서는 `COMMIT` 명령어를 통해 트랜잭션을 종료해야한다
+   - SQL 서버는 DML도 `AUTO COMMIT`으로 처리한다
+     - 따라서 따로 `COMMIT`을 입력할 필요는 없다
+   - 테이블의 전체 데이터를 삭제하는 경우, 시스템 활용측면에서 `DELETE`보다는 `TRUNCATE`를 권고한다
+     - `DELETE` : 삭제된 데이터를 로그로 저장한다
+     - `TRUNCATE` : 삭제된 데이터의 로그가 없으므로 `ROLLBACK`이 불가능하다
+
+4. SELECT
+   - 입력한 자료들을 조회하는 구문이다
+   ```sql
+   SELECT [ALL/DISTINCT] 보고 싶은 칼럼명, 보고 싶은 칼럼명, ...
+   FROM 해당 칼럼들이 있는 테이블명;
+   ```
+   - ALL : Default 옵션이므로 별도로 표시하지 않아도 된다. 중복된 데이터가 있어도 모두 출력한다.
+   - DISTINCT : 중복된 데이터가 있는 경우 1건으로 처리해서 출력한다.
+   - 예문 : 선수들의 데이터 조회
+   ```sql
+   SELECT PLAYER_ID, PLAYER_NAME, TEAM_ID, POSITION, HEIGHT, WEIGHT, BACK_NO
+   FROM PLAYER;
+   ```
+   - 예문 : 선수들의 포지션 종류 조회 ( `DISTINCT`로 중복되는 값을 1건으로 처리하여 조회)
+   ```sql
+   SELECT DISTINCT POSITION
+   FROM PLAYER;
+   ```
+   - 예문 : `*` 와일드카드를 사용해 조회
+     - `*` (애스터리스크)를 사용하면 테이블의 모든 칼럼 데이터를 조회할 수 있다
+   ```sql
+   SELECT *
+   FROM 테이블명;
+   ```
+   - 예문 : ALIAS 부여하기
+   - 조회된 결과에 일종의 별명을 부여해서 칼럼 레이블을 변경할 수 있다
+   - `ALIAS`
+     - 칼럼의 별명
+     - 칼럼명 바로 뒤에 온다
+     - 칼럼명과 `ALIAS` 사이에 AS,as 키워드를 사용할 수도 있다
+     - 쌍따옴표 `""`는 ALIAS가 공백,특수문자를 포함할 경우와 대소문자 구분이 필요할 경우 사용된다
+   - 다음은 입력한 선수들의 정보를 칼럼 별명을 이용하여 출력하는 예문이다
+   ```sql
+   SELECT PLAYER_NAME 선수명, POSITION 위치, HEIGHT 키, WEIGHT 몸무게
+   FROM PLAYER;
+   > 공백이 들어갈 경우 `""`, `''`,`[]`등으로 별명을 부여할 수 있다
+   SELECT PLAYER_NAME "선수 이름", POSITION "그라운드 포지션", HEIGHT "키", WEIGHT "몸무게"
+   FROM PLAYER;
+   ```
+5. 산술 연산자와 합성 연산자
+   - 산술 연산자
+     - NUMBER와 DATE 자료형에 대해 적용된다
+     - 수학에서의 4칙 연산과 동일하다
+     - 우선순위를 위한 괄호 적용이 가능하다
+     - 적절한 ALIAS를 새롭게 부여하는 것이 좋다
+     - 예문 : 선수들의 BMI를 측정한다
+     ```sql
+     SELECT PLAYER_NAME 이름, ROUND(WEIGHT/((HEIGHT/100)*(HEIGHT/100)),2) "BMI 비만지수"
+     FROM PLAYER;
+     ```
+   - 합성 연산자
+     - 문자와 문자를 연결하는 연산자다
+     - SQL 문장만으로도 유용한 리포트를 출력할 수 있다
+     - 문자와 문자를 연결하는 경우
+       - 오라클 : 2개의 수직바 `||`에 의해 이루어진다
+       - SQL 서버 : `+`에 의해 이루어진다
+       - `CONCAT(string1,string2)` 함수를 사용할 수 있다
+       - 칼럼과 문자 또는 다른 칼럼과 연결시킨다
+       - 문자 표현식의 결과에 의해 새로운 칼럼을 생성한다
+     - 다음과 같은 결과값이 얻고 싶은 상황이다
+     ```
+     출력 형태) 선수명 선수, 키 cm, 몸무게 kg
+     예) 박지성 선수, 176 cm, 70 kg
+     ```
+     - 예문(sql서버)
+     ```sql
+     SELECT PLAYER_NAME +'선수, '+ HEIGHT +'cm, '+ WEIGHT +'kg'체격정보
+     FROM PLAYER;
+     ```
+     - 근데 이 sql문은 실제로 해보니 잘 되지 않는다. 다음과 같은 에러가 뜨는데, 나중에 다시 시도해봐야겠다
+     ```
+     Truncated incorrect DOUBLE value: '박지성'
+     Truncated incorrect DOUBLE value: '선수'
+     ```
+
 # TCL(TRANSACTION CONTROL LANGUAGE)
 
 # WHERE 절
