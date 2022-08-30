@@ -1053,5 +1053,91 @@ WHERE 조건식;
      ```
 
 # GROUP BY, HAVING 절
+1. 집계함수(Aggregate Function)
+   - 여러 행들의 그룹이 모여서 그룹당 단 하나의 결과를 돌려주는 다중행 함수
+   - GROUP BY 절은 행들을 소그룹화 한다
+   - SELECT 절, HAVING 절, ORDER BY 절에 사용할 수 있다
+   - ALL : default
+   - DISTINCT : 같은 값을 하나의 데이터로 간주할 떄 사용하는 옵션
+   - 자주 사용되는 주요 집계 함수들은 다음과 같다. 주로 숫자 유형에 사용되지만, MAX,MIN, COUNT 함수는 문자, 날짜 유형에도 적용이 가능한 함수다
+  
+  |집계 함수|사용 목적|
+  |------|-----|
+  |COUNT(*)|NULL값을 포함한 행의 수 출력|
+  |COUNT(표현식)|표현식의 값이 NULL값인 것을 제외한 행의 수를 출력한다|
+  |SUM([DISTINCT|ALL]표현식)| 표현식의 NULL값을 제외한 합계를 출력한다|
+  |AVG([DISTINCT|ALL]표현식)| 표현식의 NULL값을 제외한 평균를 출력한다|
+  |MAX([DISTINCT|ALL]표현식)| 표현식의 최대값을 출력한다|
+  |MIN([DISTINCT|ALL]표현식)| 표현식의 최솟값을 출력한다|
+  |STDDEV([DISTINCT|ALL]표현식)| 표현식의 표준편차를 출력한다|
+  |VARIAN([DISTINCT|ALL]표현식)| 표현식의 분산를 출력한다|
+
+  - 예문
+  ```sql
+  SELECT COUNT(*) "전체 행수", COUNT(HEIGHT) "키 건수", MAX(HEIGHT) "최대키", MIN(HEIGHT) "최소키"
+  FROM PLAYER
+  ```
+
+2. GROUP BY 절
+   - WHERE 절을 통해 조건에 맞는 데이터를 조회했지만 테이블에 1차적으로 존재하는 데이터 이외의 정보
+     - 팀별로 선수가 몇명?
+     - 선수들의 평균 신장과 몸무게는?
+     - 각 팀에서 가장 큰 키의 선수가 누구인지?
+     - 예문
+     ```sql
+     SELECT [DISTINCT] 칼럼명 [ALIAS명] 
+     FROM 테이블명
+     [WHERE 조건식]
+     [GROUP BY 칼럼(Column)이나 표현식] [HAVING 그룹조건식] 
+     ``` 
+     - GROUP BY와 HAVING 절의 특성
+       - GROUP BY 절을 통해 소그룹별 기준을 정한 후, SELECT 절에 집계 함수를 사용한다
+       - 집계함수의 통계 정보는 NULL값을 가진 행을 제외하고 수행한다
+       - GROUP BY 절에서는 SELECT 절과는 달리 ALIAS 명을 사용할 수 없다
+       - 집계함수는 WHERE절에는 올 수 없다
+       - WHERE 절은 전체 데이터를 그룹으로 나누기 전에 행들을 미리 제거한다
+       - HAVING 절은 GROUP BY 절의 기준 항목이나 소그룹의 집계함수를 이용한 조건을 표시할 수 있다.
+       - GROUP BY 절에 의한 소그룹별로 만들어진 집계 데이터 중, HAVING 절에서 제한 조건을 두어 조건을 만족하는 내용만 출력한다
+       - HAVING 절은 일반적으로 GROUP BY 절 뒤에 위치한다
+     - 예문
+       ```sql
+       SELECT POSITION 포지션, COUNT(*) 인원수, COUNT(HEIGHT) 키대상, MAX(HEIGHT) 최대키, MIN(HEIGHT) 최소키, ROUND(AVG(HEIGHT),2) 평균키
+       FROM PLAYER GROUP BY POSITION;
+       ```
+3. HAVING 절
+   - WHERE 절에는 집계함수를 사용할 수 없다. 따라서 GROUP BY를 사용한다
+   - 예문1
+     ```sql
+     SELECT POSITION 포지션, ROUND(AVG(HEIGHT),2) 평균키 FROM PLAYER
+     HAVING AVG(HEIGHT) >= 180;
+     GROUP BY POSITION
+     ```
+   - 결과
+     | 포지션 | 평균키|
+     |--|--|
+     |GK| 186.26|
+     |DF| 180.21|
+   - 예문2
+     ```sql
+     SELECT POSITION 포지션, ROUND(AVG(HEIGHT),2) 평균키 
+     FROM PLAYER
+     GROUP BY POSITION
+     HAVING MAX(HEIGHT) >= 190;
+     ```  
+   - 결과
+     | 포지션 | 평균키|
+     |--|--|
+     |GK| 186.26|
+     |DF| 180.21|
+     |FW| 179.91|
+
+# ORDER BY 절
+1. ORDER BY 정렬
+2. SELECT 문장 실행 순서
+3. Top N 쿼리
 
 # 조인(JOIN)
+1. JOIN 개요
+2. EQUI JOIN
+3. Non EQUI JOIN
+4. 3개 이상 TABLE JOIN
